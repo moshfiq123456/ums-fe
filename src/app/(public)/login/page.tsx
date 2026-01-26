@@ -1,6 +1,7 @@
 "use client";
 
 import { DynamicParticleNetwork } from "@/components/animatedBackground/dynamicParticleNetwork";
+import withAuth from "@/hoc/withAdmitAuth";
 import { useLoginMutation } from "@/lib/api";
 import { setCredentials } from "@/lib/authSlice";
 import type { RootState, AppDispatch } from "@/store/store";
@@ -10,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-export default function LoginPage() {
+function LoginPage() {
   // 🔑 Hooks — TOP LEVEL ONLY
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
@@ -22,11 +23,11 @@ export default function LoginPage() {
   );
 
   // 🔍 Debug token change
-  useEffect(() => {
-    if (accessToken) {
-      console.log("✅ Global access token (Redux):", accessToken);
-    }
-  }, [accessToken, router]);
+  // useEffect(() => {
+  //   if (accessToken) {
+  //     console.log("✅ Global access token (Redux):", accessToken);
+  //   }
+  // }, [accessToken, router]);
 
   // 🧠 Event handler — NO hooks here
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
@@ -45,6 +46,7 @@ export default function LoginPage() {
           user: res.user ?? null,
         })
       );
+      router.push("/"); 
     } catch (err) {
       console.error("❌ Login failed:", err);
     }
@@ -160,3 +162,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+export default LoginPage;

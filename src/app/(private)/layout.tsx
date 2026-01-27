@@ -15,13 +15,14 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
   const handleLogout = async () => {
     try {
       await logoutApi().unwrap();
-    } catch (err) {
-      console.warn("Logout failed but clearing client state anyway");
+    } catch {
+      // ignore
     } finally {
       dispatch(logoutAction());
       router.push("/login");
     }
   };
+
 
   return (
     <AuthGate>

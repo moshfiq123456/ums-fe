@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
@@ -14,13 +14,10 @@ type DecodedToken = {
   exp: number;
 };
 
-export default function AuthGate({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuthGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
+
   const accessToken = useSelector(
     (state: RootState) => state.auth.accessToken
   );
@@ -28,17 +25,23 @@ export default function AuthGate({
   const [refreshToken] = api.useRefreshTokenMutation();
   const [fetchUser] = api.useLazyGetUserByIdQuery();
 
+  const [checking, setChecking] = useState(true);
+
+  // 🔑 new: prevent rendering children until auth is checked
+  const [authChecked, setAuthChecked] = useState(false);
+
   useEffect(() => {
     const runAuth = async () => {
       try {
         let token = accessToken;
 
-        // 🔁 No token → try refresh
+        // 🔁 Refresh if no token
         if (!token) {
           const res = await refreshToken().unwrap();
           token = res.access_token;
-          dispatch(setCredentials({ accessToken: token, user: null }));
         }
+
+        if (!token) throw new Error("No token");
 
         const decoded: DecodedToken = jwtDecode(token);
 
@@ -46,18 +49,26 @@ export default function AuthGate({
           throw new Error("Token expired");
         }
 
-        // 👤 Load user
-        const user = await fetchUser(decoded.sub).unwrap();
+        // ✅ Dispatch token before fetching user
+        dispatch(setCredentials({ accessToken: token, user: null }));
 
+        const user = await fetchUser(decoded.sub).unwrap();
         dispatch(setCredentials({ accessToken: token, user }));
-      } catch (err) {
+
+        setAuthChecked(true); // ✅ ready to render children
+      } catch {
         dispatch(logout());
-        router.push("/login");
+        router.replace("/login");
+      } finally {
+        setChecking(false);
       }
     };
 
     runAuth();
   }, []);
+
+  // 🔒 Do not render children until auth check is complete
+  if (checking || !authChecked) return null; // or a spinner
 
   return <>{children}</>;
 }

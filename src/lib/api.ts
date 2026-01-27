@@ -13,7 +13,7 @@ export const api = createApi({
   }),
   endpoints: (builder) => ({
     login: builder.mutation<any, { email: string; password: string }>({
-      query: (body) => ({ url: "/auth/login", method: "POST", body }),
+      query: (body) => ({ url: "/auth/login", method: "POST", body,credentials: "include", }),
     }),
 
     getUserById: builder.query<any, string>({

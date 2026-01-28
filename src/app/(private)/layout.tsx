@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { logout as logoutAction } from "@/lib/authSlice";
 import { useLogoutMutation } from "@/lib/api";
 import AuthGate from "@/hoc/authGate";
+import { Dashboard } from "./components/sidebarLayout";
 
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {
   const dispatch = useDispatch();
@@ -51,7 +52,9 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
         </button>
       </div>
 
-      <main className="flex flex-1 flex-col gap-4 p-4">{children}</main>
+      <main className="flex flex-1 flex-col gap-4 p-4"><Dashboard>
+  {children}
+</Dashboard></main>
     </AuthGate>
   );
 }

@@ -1,56 +1,60 @@
-"use client";
+'use client';
 
-import { useDispatch } from "react-redux";
-import { useRouter } from "next/navigation";
+import { useState, FC, ReactNode } from 'react';
+import { motion, Variants } from 'framer-motion';
+import AuthGate from '@/hoc/authGate';
+import Sidebar from '@/components/customSidebar/sidebar';
+import Navbar from '@/components/customNavbar/navbar';
 
-import { logout as logoutAction } from "@/lib/authSlice";
-import { useLogoutMutation } from "@/lib/api";
-import AuthGate from "@/hoc/authGate";
+interface PrivateLayoutProps {
+  children: ReactNode;
+}
 
-export default function PrivateLayout({ children }: { children: React.ReactNode }) {
-  const dispatch = useDispatch();
-  const router = useRouter();
-  const [logoutApi] = useLogoutMutation();
+const PrivateLayout: FC<PrivateLayoutProps> = ({ children }) => {
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
 
-  const handleLogout = async () => {
-    try {
-      await logoutApi().unwrap();
-    } catch (err) {
-      console.warn("Logout failed but clearing client state anyway");
-    } finally {
-      dispatch(logoutAction());
-      router.push("/login");
-    }
+  const handleToggleSidebar = (): void => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  // Animation for main content - properly typed with Variants
+  const contentVariants: Variants = {
+    hidden: { 
+      opacity: 0 
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.3,
+        ease: 'easeOut',
+      },
+    },
   };
 
   return (
     <AuthGate>
-      <div className="flex justify-between items-center p-4 gap-4">
-        <div className="flex gap-2">
-          <button
-            onClick={() => router.push("/")}
-            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          >
-            Go to Root
-          </button>
+      <div className="flex h-screen bg-slate-50">
+        {/* Sidebar */}
+        <Sidebar isOpen={sidebarOpen} onToggle={handleToggleSidebar} />
 
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Navbar */}
+          <Navbar onMenuClick={handleToggleSidebar} sidebarOpen={sidebarOpen} />
+
+          {/* Page Content - Using motion.main for semantic HTML */}
+          <motion.main
+            variants={contentVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex-1 overflow-auto flex flex-col gap-4 p-6"
           >
-            Go to Dashboard
-          </button>
+            {children}
+          </motion.main>
         </div>
-
-        <button
-          onClick={handleLogout}
-          className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
-        >
-          Logout
-        </button>
       </div>
-
-      <main className="flex flex-1 flex-col gap-4 p-4">{children}</main>
     </AuthGate>
   );
-}
+};
+
+export default PrivateLayout;

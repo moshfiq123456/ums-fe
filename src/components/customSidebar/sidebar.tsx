@@ -228,7 +228,7 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
           const rect = button.getBoundingClientRect();
           setDropdownPosition({
             top: rect.top,
-            left: rect.right + 32, // Even more gap to the right
+            left: rect.right + 19, // Even more gap to the right
           });
         }
         setOpenDropdown(item.label);
@@ -385,7 +385,7 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
                   {/* Submenu indicator for collapsed mode */}
                   {item.subItems && !isMobile && !isOpen && (
                     <motion.div
-                      className="absolute right-1 top-1/2 transform -translate-y-1/2 flex-shrink-0"
+                      className="absolute right-0.5 top-1/2 transform -translate-y-1/2 flex-shrink-0"
                       animate={{ 
                         opacity: openDropdown === item.label ? 1 : 0.7,
                         scale: openDropdown === item.label ? 1.3 : 1,

@@ -42,7 +42,6 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
   const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number } | null>(null);
   const menuItemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
-  // Detect mobile screen size
   useEffect(() => {
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 1024);
@@ -119,27 +118,11 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
     },
   };
 
-  const labelVariants: Variants = {
-    open: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.2, delay: 0.1 },
-    },
-    closed: {
-      opacity: 0,
-      x: -20,
-      transition: { duration: 0.1 },
-    },
-  };
-
   const submenuContainerVariants: Variants = {
     hidden: {
       opacity: 0,
       height: 0,
-      transition: {
-        duration: 0.2,
-        ease: 'easeInOut',
-      },
+      transition: { duration: 0.2, ease: 'easeInOut' },
     },
     visible: {
       opacity: 1,
@@ -154,25 +137,16 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
   };
 
   const submenuItemVariants: Variants = {
-    hidden: {
-      opacity: 0,
-      x: -20,
-    },
+    hidden: { opacity: 0, x: -20 },
     visible: {
       opacity: 1,
       x: 0,
-      transition: {
-        duration: 0.2,
-        ease: 'easeOut',
-      },
+      transition: { duration: 0.2, ease: 'easeOut' },
     },
   };
 
   const dropdownVariants: Variants = {
-    hidden: {
-      opacity: 0,
-      scale: 0.95,
-    },
+    hidden: { opacity: 0, scale: 0.95 },
     visible: {
       opacity: 1,
       scale: 1,
@@ -190,10 +164,7 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      transition: {
-        delay: i * 0.05,
-        duration: 0.2,
-      },
+      transition: { delay: i * 0.05, duration: 0.2 },
     }),
   };
 
@@ -205,20 +176,15 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
   };
 
   const handleNavigation = (href: string, e?: React.MouseEvent) => {
-    if (e) {
-      e.stopPropagation();
-    }
+    if (e) e.stopPropagation();
     router.push(href);
-    if (isMobile && isOpen) {
-      onToggle();
-    }
+    if (isMobile && isOpen) onToggle();
     setOpenDropdown(null);
   };
 
   const handleMenuItemClick = (item: MenuItem, e: React.MouseEvent) => {
     e.stopPropagation();
 
-    // Desktop collapsed + has submenu → Toggle dropdown
     if (!isMobile && !isOpen && item.subItems) {
       if (openDropdown === item.label) {
         setOpenDropdown(null);
@@ -226,37 +192,27 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
         const button = menuItemRefs.current[item.label];
         if (button) {
           const rect = button.getBoundingClientRect();
-          setDropdownPosition({
-            top: rect.top,
-            left: rect.right + 32, // Even more gap to the right
-          });
+          setDropdownPosition({ top: rect.top, left: rect.right + 32 });
         }
         setOpenDropdown(item.label);
       }
       return;
     }
 
-    // Desktop expanded + has submenu → Toggle submenu
     if (!isMobile && isOpen && item.subItems) {
       toggleExpanded(item.label, e);
       return;
     }
 
-    // Mobile + has submenu → Toggle submenu
     if (isMobile && item.subItems) {
       toggleExpanded(item.label, e);
       return;
     }
 
-    // Direct navigation for items without submenus
-    if (item.href) {
-      handleNavigation(item.href, e);
-    }
+    if (item.href) handleNavigation(item.href, e);
   };
 
-  const handleBackdropClick = () => {
-    setOpenDropdown(null);
-  };
+  const handleBackdropClick = () => setOpenDropdown(null);
 
   return (
     <>
@@ -279,7 +235,7 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           onClick={onToggle}
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-foreground/20 z-40 lg:hidden backdrop-blur-sm"
           style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
         />
       )}
@@ -289,15 +245,13 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
         variants={isMobile ? mobileSidebarVariants : desktopSidebarVariants}
         initial={false}
         animate={isOpen ? 'open' : 'closed'}
-        style={{
-          width: isMobile ? '100vw' : 'auto',
-        }}
+        style={{ width: isMobile ? '100vw' : 'auto' }}
         className={`${
           isMobile ? 'fixed left-0 top-0 h-screen z-50' : 'relative'
-        } bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 shadow-2xl flex flex-col overflow-hidden`}
+        } bg-sidebar shadow-2xl flex flex-col overflow-hidden border-r border-sidebar-border`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-6 border-b border-slate-700 flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-6 border-b border-sidebar-border flex-shrink-0">
           <motion.div
             animate={{
               opacity: isMobile ? 1 : isOpen ? 1 : 0,
@@ -306,15 +260,15 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
             transition={{ duration: 0.3 }}
             className="flex items-center gap-2 overflow-hidden"
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-sm">N</span>
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0 shadow-sm">
+              <span className="text-primary-foreground font-bold text-sm">N</span>
             </div>
-            <span className="text-white font-bold text-lg tracking-tight">Nav</span>
+            <span className="text-sidebar-foreground font-bold text-lg tracking-tight">Nav</span>
           </motion.div>
 
           <button
             onClick={onToggle}
-            className="p-2 hover:bg-slate-700 rounded-lg transition-colors duration-200 flex-shrink-0"
+            className="p-2 hover:bg-sidebar-accent rounded-lg transition-colors duration-200 flex-shrink-0"
             aria-label="Toggle sidebar"
           >
             <motion.div
@@ -322,9 +276,9 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
               transition={{ duration: 0.3 }}
             >
               {isOpen ? (
-                <X className="w-5 h-5 text-slate-400" />
+                <X className="w-5 h-5 text-sidebar-foreground/60" />
               ) : (
-                <Menu className="w-5 h-5 text-slate-400" />
+                <Menu className="w-5 h-5 text-sidebar-foreground/60" />
               )}
             </motion.div>
           </button>
@@ -341,13 +295,13 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
                     if (el) menuItemRefs.current[item.label] = el;
                   }}
                   onClick={(e) => handleMenuItemClick(item, e)}
-                  className="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all duration-200 group cursor-pointer relative overflow-hidden"
+                  className="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200 group cursor-pointer relative overflow-hidden"
                 >
                   {/* Background glow on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-cyan-500/0 to-blue-500/0 group-hover:from-blue-500/10 group-hover:via-cyan-500/10 group-hover:to-blue-500/10 transition-all duration-300" />
+                  <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-all duration-300" />
 
                   <div className="relative flex-shrink-0">
-                    <item.icon className="w-5 h-5" />
+                    <item.icon className="w-5 h-5 group-hover:text-primary transition-colors duration-200" />
                   </div>
 
                   <motion.span
@@ -362,16 +316,14 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
                   {item.subItems && (isOpen || isMobile) && (
                     <motion.div
                       className="ml-auto flex-shrink-0"
-                      animate={{
-                        rotate: expandedItems.includes(item.label) ? 180 : 0,
-                      }}
+                      animate={{ rotate: expandedItems.includes(item.label) ? 180 : 0 }}
                       transition={{ duration: 0.2 }}
                     >
                       <ChevronDown className="w-4 h-4" />
                     </motion.div>
                   )}
 
-                  {/* Right arrow for expanded items without submenu */}
+                  {/* Right arrow for items without submenu */}
                   {!item.subItems && !isMobile && isOpen && (
                     <motion.div
                       className="ml-auto flex-shrink-0"
@@ -386,18 +338,18 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
                   {item.subItems && !isMobile && !isOpen && (
                     <motion.div
                       className="absolute right-1 top-1/2 transform -translate-y-1/2 flex-shrink-0"
-                      animate={{ 
+                      animate={{
                         opacity: openDropdown === item.label ? 1 : 0.7,
                         scale: openDropdown === item.label ? 1.3 : 1,
                       }}
                       transition={{ duration: 0.2 }}
                     >
-                      <div className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-lg" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-primary shadow-lg" />
                     </motion.div>
                   )}
                 </motion.button>
 
-                {/* Dropdown Popup (Desktop Collapsed) - Wider and more to the right */}
+                {/* Dropdown Popup (Desktop Collapsed) */}
                 {!isMobile && !isOpen && item.subItems && openDropdown === item.label && dropdownPosition && (
                   <motion.div
                     variants={dropdownVariants}
@@ -410,9 +362,7 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
                       left: `${dropdownPosition.left}px`,
                     }}
                   >
-                    {/* Dropdown Container - Much wider width */}
-                    <div className="bg-slate-800 rounded-lg shadow-2xl border border-slate-600 overflow-visible w-72">
-                      {/* Dropdown Items */}
+                    <div className="bg-card rounded-lg shadow-2xl border border-border overflow-visible w-72">
                       {item.subItems.map((subItem, idx) => (
                         <motion.button
                           key={subItem.label}
@@ -421,7 +371,7 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
                           initial="hidden"
                           animate="visible"
                           onClick={(e) => handleNavigation(subItem.href, e)}
-                          className="w-full text-left px-6 py-3.5 text-sm text-slate-300 hover:text-white hover:bg-slate-700 transition-all duration-200 block hover:rounded-md"
+                          className="w-full text-left px-6 py-3.5 text-sm text-foreground/70 hover:text-foreground hover:bg-accent transition-all duration-200 block hover:rounded-md"
                         >
                           {subItem.label}
                         </motion.button>
@@ -438,16 +388,15 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
                     animate={expandedItems.includes(item.label) ? 'visible' : 'hidden'}
                     className="overflow-hidden"
                   >
-                    <div className="ml-4 space-y-1 border-l border-slate-700 pl-4 py-2">
+                    <div className="ml-4 space-y-1 border-l border-sidebar-border pl-4 py-2">
                       {item.subItems.map((subItem) => (
                         <motion.button
                           key={subItem.label}
                           onClick={(e) => handleNavigation(subItem.href, e)}
                           variants={submenuItemVariants}
-                          className="w-full text-left px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-200 group relative overflow-hidden"
+                          className="w-full text-left px-4 py-2 rounded-lg text-sm text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all duration-200 group relative overflow-hidden"
                         >
-                          {/* Background glow on hover */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-cyan-500/0 to-blue-500/0 group-hover:from-blue-500/5 group-hover:via-cyan-500/5 group-hover:to-blue-500/5 transition-all duration-300" />
+                          <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-all duration-300" />
                           <span className="relative">{subItem.label}</span>
                         </motion.button>
                       ))}
@@ -461,12 +410,12 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
 
         {/* Footer - Close button for mobile */}
         {isMobile && (
-          <div className="border-t border-slate-700 px-4 py-4 flex-shrink-0">
+          <div className="border-t border-sidebar-border px-4 py-4 flex-shrink-0">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={onToggle}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-sidebar-accent hover:bg-sidebar-accent/80 text-sidebar-foreground text-sm font-medium transition-colors"
             >
               <X className="w-4 h-4" />
               Close Menu

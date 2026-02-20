@@ -551,7 +551,7 @@ const Navbar: FC<NavbarProps> = ({ onMenuClick, sidebarOpen }) => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="sticky top-0 z-30 flex justify-between items-center px-4 md:px-6 py-3 border-b border-border bg-card/80 backdrop-blur-lg shadow-sm"
+        className="sticky top-0 z-30 flex justify-between items-center px-4 md:px-6 h-14 border-b border-border bg-card/80 backdrop-blur-lg shadow-sm"
       >
         {/* Left Section */}
         <div className="flex items-center gap-3 md:gap-4">

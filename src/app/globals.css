@@ -46,43 +46,8 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
-/*
- * Fallback: arctic-blue (subtle depth)
- * Card/Nav: #ebf0f9 | Background: #dfe7f3 | Sidebar: #d0daea
- */
 :root {
   --radius: 0.625rem;
-  --background: #dfe7f3;
-  --foreground: #0f172a;
-  --card: #ebf0f9;
-  --card-foreground: #0f172a;
-  --popover: #ebf0f9;
-  --popover-foreground: #0f172a;
-  --primary: #2563eb;
-  --primary-foreground: #ebf0f9;
-  --secondary: #ccd8ec;
-  --secondary-foreground: #2563eb;
-  --muted: #d2dcee;
-  --muted-foreground: #3a4e6e;
-  --accent: #ccd8ec;
-  --accent-foreground: #2563eb;
-  --destructive: #dc2626;
-  --border: #b8c8de;
-  --input: #b8c8de;
-  --ring: #3b82f6;
-  --chart-1: #2563eb;
-  --chart-2: #3b82f6;
-  --chart-3: #60a5fa;
-  --chart-4: #3a4e6e;
-  --chart-5: #93c5fd;
-  --sidebar: #d0daea;
-  --sidebar-foreground: #0f172a;
-  --sidebar-primary: #2563eb;
-  --sidebar-primary-foreground: #ebf0f9;
-  --sidebar-accent: #c4cedf;
-  --sidebar-accent-foreground: #2563eb;
-  --sidebar-border: #b0c0d6;
-  --sidebar-ring: #3b82f6;
 }
 
 @layer base {

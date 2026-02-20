@@ -1,8 +1,7 @@
 "use client";
 
 import { DynamicParticleNetwork } from "@/components/animatedBackground/dynamicParticleNetwork";
-import withAuth from "@/hoc/withAdmitAuth";
-import { useLoginMutation } from "@/lib/api";
+import { api, useLoginMutation } from "@/lib/api";
 import { setCredentials } from "@/lib/authSlice";
 import type { RootState, AppDispatch } from "@/store/store";
 
@@ -22,12 +21,24 @@ function LoginPage() {
     (state: RootState) => state.auth.accessToken
   );
 
-  // 🔍 Debug token change
-  // useEffect(() => {
-  //   if (accessToken) {
-  //     console.log("✅ Global access token (Redux):", accessToken);
-  //   }
-  // }, [accessToken, router]);
+  const [refreshToken] = api.useRefreshTokenMutation();
+
+  // Redirect to home if already logged in (check refresh token cookie)
+  useEffect(() => {
+    if (accessToken) {
+      router.push("/");
+      return;
+    }
+    refreshToken()
+      .unwrap()
+      .then((res) => {
+        dispatch(setCredentials({ accessToken: res.access_token, user: null }));
+        router.push("/");
+      })
+      .catch(() => {
+        // No valid session — stay on login page
+      });
+  }, []);
 
   // 🧠 Event handler — NO hooks here
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {

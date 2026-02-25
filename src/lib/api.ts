@@ -1,8 +1,32 @@
 import { RootState } from "@/store/store";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+// ─── Types ────────────────────────────────────────────────
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role?: string;
+  status?: string;
+  createdAt?: string;
+}
+
+export interface UsersResponse {
+  data: User[];
+  total: number;
+  page: number;
+  size: number;
+}
+
+export interface GetUsersParams {
+  page?: number;
+  size?: number;
+}
+
 export const api = createApi({
   reducerPath: "api",
+  tagTypes: ["Users"],
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_URL,
     prepareHeaders: (headers, { getState }) => {
@@ -20,8 +44,11 @@ export const api = createApi({
       query: (id) => `/users/${id}`,
     }),
 
-    getUsers: builder.query<any, void>({
-      query: () => "/users?page=1&size=2",
+    getUsers: builder.query<UsersResponse, GetUsersParams>({
+      query: ({ page = 1, size = 10 } = {}) =>
+        `/users?page=${page}&size=${size}`,
+      providesTags: ["Users"],
+      
     }),
 
     refreshToken: builder.mutation<{ access_token: string }, void>({

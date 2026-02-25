@@ -8,6 +8,7 @@ import {
   Settings,
   MessageSquare,
   Users,
+  UserCheck,
   FileText,
   X,
   ChevronDown,
@@ -101,6 +102,13 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onToggle }) => {
           ],
         },
         { icon: FileText, label: 'Documents', href: '/documents' },
+        {
+          icon: UserCheck,
+          label: 'Users',
+          subItems: [
+            { label: 'Repository', href: '/users' },
+          ],
+        },
       ],
     },
     {
